@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAS'INDUSTRIES</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080808;--surf:#101010;--surf2:#161616;--border:#1c1c1c;--border2:#242424;--accent:#ff3c00;--text:#efefef;--muted:#484848;--muted2:#777;--live:#00e676;--discord:#5865F2;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+body::before{content:'';position:fixed;top:-200px;left:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(255,60,0,0.07) 0%,transparent 65%);pointer-events:none;z-index:0}
+
+#loginPage{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem;text-align:center}
+.login-logo{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,10vw,5rem);letter-spacing:.06em;line-height:1;margin-bottom:.5rem}
+.login-logo span{color:var(--accent)}
+.login-sub{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted2);margin-bottom:3rem}
+.login-card{background:var(--surf);border:1px solid var(--border2);padding:2.5rem 2rem;width:100%;max-width:380px}
+.login-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.08em;margin-bottom:.5rem}
+.login-desc{font-size:.84rem;color:var(--muted2);line-height:1.6;margin-bottom:2rem}
+.discord-btn{display:flex;align-items:center;justify-content:center;gap:.7rem;width:100%;padding:.85rem 1.2rem;background:var(--discord);color:#fff;border:none;cursor:pointer;text-decoration:none;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:500;transition:background .15s}
+.discord-btn:hover{background:#4752c4}
+.login-notice{margin-top:1.2rem;font-size:.74rem;color:var(--muted);line-height:1.5}
+
+#app{display:none}
+header{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;padding:1.2rem 2rem;border-bottom:1px solid var(--border)}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;letter-spacing:.06em;line-height:1}
+.logo span{color:var(--accent)}
+.uchip{display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:var(--muted2)}
+.uavatar{width:28px;height:28px;border-radius:50%;background:var(--surf2);border:1px solid var(--border2);object-fit:cover}
+.logout-btn{background:none;border:1px solid var(--border2);color:var(--muted2);padding:.25rem .7rem;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.logout-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+.tabs{position:relative;z-index:1;display:flex;border-bottom:1px solid var(--border)}
+.tab{padding:.9rem 1.8rem;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+.view{display:none;position:relative;z-index:1;padding:2rem}
+.view.active{display:block}
+.view-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.08em;margin-bottom:1.5rem}
+
+#choiceView{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:1.5rem;text-align:center}
+.choice-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.06em;margin-bottom:.5rem}
+.choice-sub{font-size:.88rem;color:var(--muted2);margin-bottom:2rem}
+.choice-btns{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+.choice-btn{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.1em;padding:1rem 2rem;border:2px solid;cursor:pointer;transition:all .15s;min-width:200px;text-align:center}
+.choice-btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.choice-btn-primary:hover{background:#e03500}
+.choice-btn-secondary{background:none;border-color:var(--border2);color:var(--muted2)}
+.choice-btn-secondary:hover{border-color:var(--text);color:var(--text)}
+
+#formView{max-width:620px;margin:0 auto}
+.form-progress{height:2px;background:var(--border);margin-bottom:2rem}
+.form-progress-fill{height:100%;background:var(--accent);transition:width .4s}
+.fstep{display:none}
+.fstep.active{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fstep-label{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted2);margin-bottom:1rem}
+.fquestion{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.3rem,4vw,1.8rem);letter-spacing:.04em;line-height:1.15;margin-bottom:1.5rem}
+.fopts{display:flex;flex-direction:column;gap:.6rem}
+.fopt{display:flex;align-items:center;gap:.8rem;padding:.85rem 1rem;border:1px solid var(--border);cursor:pointer;transition:border-color .2s,background .2s;font-size:.88rem;user-select:none}
+.fopt:hover{border-color:var(--muted);background:rgba(255,255,255,.02)}
+.fopt.sel{border-color:var(--accent);background:rgba(255,60,0,.06)}
+.fopt-dot{width:14px;height:14px;border:1.5px solid var(--muted);border-radius:50%;flex-shrink:0;transition:all .2s}
+.fopt.sel .fopt-dot{border-color:var(--accent);background:var(--accent)}
+.ffields{display:flex;flex-direction:column;gap:.9rem}
+.ffield{display:flex;flex-direction:column;gap:.3rem}
+.ffield label{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2)}
+.ffield input,.ffield textarea{background:#0e0e0e;border:1px solid var(--border2);color:var(--text);padding:.7rem .9rem;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s;width:100%}
+.ffield input:focus,.ffield textarea:focus{border-color:var(--accent)}
+.ffield input::placeholder,.ffield textarea::placeholder{color:#333}
+.ffield textarea{min-height:100px;resize:vertical;line-height:1.6}
+.free-hint{font-size:.72rem;color:var(--muted);margin-top:.4rem}
+.fbtn{margin-top:1.5rem;width:100%;padding:.85rem;background:var(--accent);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.12em;border:none;cursor:pointer;transition:background .15s}
+.fbtn:hover{background:#e03500}
+.fbtn:disabled{background:var(--muted);cursor:not-allowed}
+
+.status-card{text-align:center;padding:3rem 1rem}
+.status-icon{font-size:2.5rem;margin-bottom:1rem}
+.status-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.06em;margin-bottom:.5rem}
+.status-sub{font-size:.88rem;color:var(--muted2);line-height:1.6}
+.status-line{width:40px;height:2px;background:var(--accent);margin:1rem auto}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:2rem}
+.sbox{background:var(--surf);padding:1.2rem 1.5rem}
+.sval{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.04em;line-height:1;margin-bottom:.2rem}
+.sval.r{color:var(--accent)}.sval.g{color:var(--live)}
+.slbl{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2)}
+
+.admin-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;flex-wrap:wrap;gap:.8rem}
+.fbar{display:flex;gap:.4rem;flex-wrap:wrap}
+.fb{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;padding:.32rem .75rem;border:1px solid var(--border2);background:none;color:var(--muted2);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.fb:hover,.fb.on{border-color:var(--accent);color:var(--accent);background:rgba(255,60,0,.06)}
+.refresh-btn{font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:.1em;padding:.5rem 1.1rem;background:none;border:1px solid var(--border2);color:var(--muted2);cursor:pointer;transition:all .15s}
+.refresh-btn:hover{border-color:var(--accent);color:var(--accent)}
+.last-upd{font-size:.72rem;color:var(--muted)}
+
+.aff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1px;background:var(--border);border:1px solid var(--border)}
+.aff-card{background:var(--surf);padding:1.2rem 1.4rem;transition:background .15s}
+.aff-card:hover{background:var(--surf2)}
+.aff-head{display:flex;align-items:center;gap:.8rem;margin-bottom:1rem}
+.aff-av{width:36px;height:36px;border-radius:50%;background:var(--surf2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:var(--muted2);flex-shrink:0;object-fit:cover}
+.aff-name{font-weight:500;font-size:.9rem;line-height:1.2}
+.aff-disc{font-size:.72rem;color:var(--discord);margin-top:.1rem}
+.live-badge{margin-left:auto;flex-shrink:0;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border:1px solid}
+.badge-live{color:var(--live);border-color:var(--live);background:rgba(0,230,118,.07)}
+.badge-off{color:var(--muted);border-color:var(--border2)}
+.aff-accounts{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.6rem}
+.aff-arow{display:flex;align-items:center;justify-content:space-between;padding:.5rem .8rem;background:var(--bg);border:1px solid var(--border);font-size:.8rem}
+.aff-games{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem}
+.game-tag{font-size:.68rem;letter-spacing:.06em;padding:.18rem .55rem;border:1px solid var(--border2);color:var(--muted2);background:var(--surf2)}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle;flex-shrink:0}
+.dl{background:var(--live);box-shadow:0 0 5px var(--live);animation:pulse 1.8s infinite}
+.dof{background:var(--muted)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.dur-wrap{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--muted2)}
+.dur-bar{width:40px;height:2px;background:var(--border2);position:relative}
+.dur-fill{position:absolute;left:0;top:0;height:100%;background:var(--accent)}
+.no-aff{text-align:center;padding:4rem 2rem;color:var(--muted2);font-size:.88rem;background:var(--surf);line-height:1.8;width:100%}
+
+.app-list{display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border)}
+.app-card{background:var(--surf);padding:1.4rem 1.6rem}
+.app-badge{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border:1px solid;margin-left:auto}
+.badge-pending{color:#ffb800;border-color:#ffb800;background:rgba(255,184,0,.07)}
+.badge-accepted{color:var(--live);border-color:var(--live);background:rgba(0,230,118,.07)}
+.badge-rejected{color:var(--muted);border-color:var(--border2)}
+.app-answers{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.6rem;margin-bottom:1rem}
+.app-answer{background:var(--surf2);border:1px solid var(--border);padding:.6rem .8rem}
+.app-answer-label{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2);margin-bottom:.2rem}
+.app-answer-val{font-size:.82rem;font-weight:500}
+.app-answer-val.hi{color:var(--accent)}
+.app-btns{display:flex;gap:.6rem;margin-top:1rem}
+.btn-accept{font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:.1em;padding:.5rem 1.2rem;background:var(--live);color:#000;border:none;cursor:pointer;font-weight:600;transition:opacity .15s}
+.btn-accept:hover{opacity:.85}
+.btn-reject{font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:.1em;padding:.5rem 1.2rem;background:none;color:var(--muted2);border:1px solid var(--border2);cursor:pointer;transition:all .15s}
+.btn-reject:hover{border-color:var(--accent);color:var(--accent)}
+
+.add-row{display:flex;gap:.7rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.add-input{flex:1;min-width:180px;background:var(--surf);border:1px solid var(--border2);color:var(--text);padding:.7rem 1rem;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .15s}
+.add-input:focus{border-color:var(--accent)}
+.add-input::placeholder{color:var(--muted)}
+.add-btn{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.1em;padding:.7rem 1.4rem;background:var(--accent);color:#fff;border:none;cursor:pointer;transition:background .15s}
+.add-btn:hover{background:#e03500}
+.items-list{display:flex;flex-direction:column;gap:.5rem}
+.item-row{display:flex;align-items:center;justify-content:space-between;background:var(--surf);border:1px solid var(--border);padding:.8rem 1rem;gap:1rem;font-size:.88rem}
+.item-main{font-weight:500;flex:1}
+.item-sub{font-size:.75rem;color:var(--muted2)}
+.del-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:.2rem .4rem;transition:color .15s}
+.del-btn:hover{color:var(--accent)}
+.empty-list{text-align:center;padding:2.5rem 1rem;color:var(--muted2);font-size:.85rem;border:1px dashed var(--border2);line-height:1.7}
+.section-sep{margin:2rem 0 1.2rem;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.1em;color:var(--muted2);border-bottom:1px solid var(--border);padding-bottom:.5rem}
+
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--surf);border:1px solid var(--border2);padding:1.8rem;width:100%;max-width:400px;position:relative}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.08em;margin-bottom:1rem}
+.modal-close{position:absolute;top:.8rem;right:.8rem;background:none;border:none;color:var(--muted2);cursor:pointer;font-size:1.1rem}
+.modal-close:hover{color:var(--text)}
+.modal-textarea{width:100%;min-height:100px;background:#0e0e0e;border:1px solid var(--border2);color:var(--text);padding:.7rem .9rem;font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;resize:vertical;line-height:1.5}
+.modal-textarea:focus{border-color:var(--accent)}
+.modal-btns{display:flex;gap:.6rem;margin-top:1rem}
+.modal-btns button{flex:1;padding:.6rem;border:none;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.1em;transition:all .15s}
+.modal-cancel{background:var(--surf2);border:1px solid var(--border2) !important;color:var(--muted2)}
+.modal-cancel:hover{color:var(--text)}
+.modal-confirm{background:var(--accent);color:#fff}
+.modal-confirm:hover{background:#e03500}
+
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--surf);border:1px solid var(--border2);padding:.8rem 1.2rem;font-size:.85rem;z-index:999;transform:translateY(80px);opacity:0;transition:all .25s;max-width:280px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-left:3px solid var(--live)}
+.toast.error{border-left:3px solid var(--accent)}
+
+.aff-mini-stat{display:flex;align-items:center;gap:.5rem;font-size:.72rem;color:var(--muted2);flex-wrap:wrap;margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--border)}
+.aff-actions{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.6rem}
+.aff-action-btn{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border:1px solid var(--border2);background:none;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.aff-action-btn:hover{border-color:var(--accent);color:var(--accent)}
+.aff-status-sel{font-size:.62rem;padding:3px 6px;background:var(--bg);border:1px solid var(--border2);color:var(--muted2);font-family:'DM Sans',sans-serif;cursor:pointer}
+.absence-reason{margin-top:.5rem;font-size:.78rem;color:#ffb800;background:rgba(255,184,0,.06);border:1px solid rgba(255,184,0,.2);padding:.5rem .7rem;line-height:1.4}
+.admin-note{margin-top:.4rem;font-size:.75rem;color:var(--muted2);font-style:italic}
+
+@media(max-width:640px){.stats-row{grid-template-columns:repeat(2,1fr)}.view{padding:1.2rem}header{padding:1rem}.choice-btns{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<div id="loginPage">
+  <div class="login-logo">CAS<span>'</span>INDUSTRIES</div>
+  <div class="login-sub">Plateforme affiliés live TikTok</div>
+  <div class="login-card">
+    <div class="login-title">Connexion</div>
+    <div class="login-desc">Connecte-toi avec ton compte Discord pour accéder à la plateforme.</div>
+    <a class="discord-btn" href="/auth/discord">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.003.022.015.043.03.056a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+      Se connecter avec Discord
+    </a>
+    <div class="login-notice">Seul ton nom d'utilisateur Discord est utilisé.</div>
+  </div>
+</div>
+
+<div id="app">
+  <header>
+    <div class="logo">CAS<span>'</span>INDUSTRIES</div>
+    <div class="uchip">
+      <img class="uavatar" id="uAvatar" src="" alt=""/>
+      <span id="uName"></span>
+      <button class="logout-btn" onclick="logout()">Déco</button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" id="tabHome" onclick="showTab('Home',this)">Accueil</button>
+    <button class="tab" id="tabAffiliate" style="display:none" onclick="showTab('Affiliate',this)">Mon espace</button>
+    <button class="tab" id="tabAdmin" style="display:none" onclick="showTab('Admin',this)">Dashboard</button>
+    <button class="tab" id="tabLeader" style="display:none" onclick="showTab('Leader',this)">Leaderboard</button>
+    <button class="tab" id="tabDeposits" style="display:none" onclick="showTab('Deposits',this)">Dépôts</button>
+    <button class="tab" id="tabFormation" style="display:none" onclick="showTab('Formation',this)">Formation</button>
+    <button class="tab" id="tabStats" style="display:none" onclick="showTab('Stats',this)">Stats</button>
+    <button class="tab" id="tabApps" style="display:none" onclick="showTab('Apps',this)">
+      Candidatures <span id="pendingBadge" style="background:var(--accent);color:#fff;font-size:.6rem;padding:1px 5px;margin-left:4px;display:none">0</span>
+    </button>
+  </div>
+
+  <!-- HOME -->
+  <div class="view active" id="viewHome">
+    <div id="choiceView">
+      <div>
+        <div class="choice-title">BIENVENUE SUR CAS'INDUSTRIES</div>
+        <div class="choice-sub">Que veux-tu faire ?</div>
+      </div>
+      <div class="choice-btns">
+        <button class="choice-btn choice-btn-primary" onclick="showFormView()">CANDIDATER</button>
+        <button class="choice-btn choice-btn-secondary" id="alreadyAffBtn" onclick="showTab('Affiliate',document.getElementById('tabAffiliate'))" style="display:none">DÉJÀ AFFILIÉ</button>
+      </div>
+      <div id="notMemberMsg" style="display:none;font-size:.8rem;color:var(--muted2);margin-top:.5rem">Tu n\'es pas encore dans le serveur Discord.</div>
+    </div>
+    <div id="pendingView" style="display:none">
+      <div class="status-card">
+        <div class="status-icon">⏳</div>
+        <div class="status-title">CANDIDATURE ENVOYÉE</div>
+        <div class="status-line"></div>
+        <div class="status-sub">Ta candidature est en cours d'examen. Tu seras notifié sur Discord.</div>
+      </div>
+    </div>
+    <div id="rejectedView" style="display:none">
+      <div class="status-card">
+        <div class="status-icon">❌</div>
+        <div class="status-title">CANDIDATURE REFUSÉE</div>
+        <div class="status-line"></div>
+        <div class="status-sub">Ta candidature n'a pas été retenue. Tu pourras repostuler dans 30 jours.</div>
+      </div>
+    </div>
+    <div id="formView" style="display:none">
+      <div style="max-width:620px;margin:0 auto">
+        <div class="form-progress"><div class="form-progress-fill" id="fProg" style="width:0%"></div></div>
+        <div class="fstep active" id="fs1">
+          <div class="fstep-label">Question 1 / 10</div>
+          <div class="fquestion">Tu es majeur(e) ?</div>
+          <div class="fopts">
+            <div class="fopt" data-q="1" data-v="oui" onclick="selOpt(this)"><div class="fopt-dot"></div>Oui, j'ai 18 ans ou plus</div>
+            <div class="fopt" data-q="1" data-v="non" onclick="selOpt(this);document.getElementById('ageWrap').style.display='block'"><div class="fopt-dot"></div>Non, je suis mineur(e)</div>
+          </div>
+          <div id="ageWrap" style="display:none;margin-top:1rem">
+            <div class="ffield"><label>Ton âge exact</label><input type="number" id="ageInput" min="10" max="17" placeholder="ex : 16"/></div>
+          </div>
+          <button class="fbtn" onclick="nextFs(1)" id="fsbtn1" disabled>CONTINUER</button>
+        </div>
+        <div class="fstep" id="fs2">
+          <div class="fstep-label">Question 2 / 10</div>
+          <div class="fquestion">Tu as un compte TikTok actif ?</div>
+          <div class="fopts">
+            <div class="fopt" data-q="2" data-v="1000+" onclick="selOpt(this)"><div class="fopt-dot"></div>Oui, avec 1 000 abonnés ou plus</div>
+            <div class="fopt" data-q="2" data-v="moins_1000" onclick="selOpt(this)"><div class="fopt-dot"></div>Oui, moins de 1 000 abonnés</div>
+            <div class="fopt" data-q="2" data-v="non" onclick="selOpt(this)"><div class="fopt-dot"></div>Non, pas de compte TikTok</div>
+          </div>
+          <button class="fbtn" onclick="nextFs(2)" id="fsbtn2" disabled>CONTINUER</button>
+        </div>
+        <div class="fstep" id="fs3">
+          <div class="fstep-label">Question 3 / 10</div>
+          <div class="fquestion">Tu as plusieurs comptes TikTok ?</div>
+          <div class="fopts">
+            <div class="fopt" data-q="3" data-v="oui" onclick="selOpt(this)"><div class="fopt-dot"></div>Oui, plusieurs comptes actifs</div>
+            <div class="fopt" data-q="3" data-v="non" onclick="selOpt(this)"><div class="fopt-dot"></div>Non, un seul compte</div>
+          </div>
+          <button class="fbtn" onclick="nextFs(3)" id="fsbtn3" disabled>CONTINUER</button>
+        </div>
+        <div class="fstep" id="fs4">
+          <div class="fstep-label">Question 4 / 10</div>
+          <div class="fquestion">Tu as accès aux lives TikTok ?</div>
+          <div class="fopts">
+            <div class="fopt" data-q="4" data-v="oui" onclick="selOpt(this)"><div class="fopt-dot"></div>Oui, je peux lancer un live</div>
+            <div class="fopt" data-q="4" data-v="non" onclick="selOpt(this)"><div class="fopt-dot"></div>Non, pas encore accès</div>
+          </div>
+          <button class="fbtn" onclick="nextFs(4)" id="fsbtn4" disabled>CONTINUER</button>
+        </div>
+        <div class="fstep" id="fs5">
+          <div class="fstep-label">Question 5 / 10</div>
+          <div class="fquestion">Tu peux faire des lives tous les jours ?</div>
+          <div class="fopts">
+            <div class="fopt" data-q="5" data-v="tous_jours" onclick="selOpt(this)"><div class="fopt-dot"></div>Oui, tous les jours</div>
+            <div class="fopt" data-q="5" data-v="5-6j" onclick="selOpt(this)"><div class="fopt-dot"></div>5 à 6 jours par semaine</div>
+            <div class="fopt" data-q="5" data-v="3-4j" onclick="selOpt(this)"><div class="fopt-dot"></div>3 à 4 jours par semaine</div>
+            <div class="fopt" data-q="5" data-v="moins" onclick="selOpt(this)"><div class="fopt-dot"></div>1 à 2 jours ou moins</div>
+          </div>
+          <button class="fbtn" onclick="nextFs(5)" id="fsbtn5" disabled>CONTINUER</button>
+        </div>
+        <div class="fstep" id="fs6">
+          <div class="fstep-label">Question 6 / 10</div>
+          <div class="fquestion">Combien de temps par live ?</div>
+          <div class="fopts">
+            <div class="fopt" data-q="6" data-v="2h+" onclick="selOpt(this)"><div class="fopt-dot"></div>2h ou plus</div>
+            <div class="fopt" data-q="6" data-v="1-2h" onclick="selOpt(this)"><div class="fopt-dot"></div>Entre 1h et 2h</div>
+            <div class="fopt" data-q="6" data-v="30-60min" onclick="selOpt(this)"><div class="fopt-dot"></div>Entre 30 et 60 min</div>
+            <div class="fopt" data-q="6" data-v="<30min" onclick="selOpt(this)"><div class="fopt-dot"></div>Moins de 30 min</div>
+          </div>
+          <button class="fbtn" onclick="nextFs(6)" id="fsbtn6" disabled>CONTINUER</button>
+        </div>
+        <div class="fstep" id="fs7">
+          <div class="fstep-label">Question 7 / 10</div>
+          <div class="fquestion">Ton objectif financier par mois ?</div>
+          <div class="fopts">
+            <div class="fopt" data-q="7" data-v="5k+" onclick="selOpt(this)"><div class="fopt-dot"></div>5 000 € ou plus</div>
+            <div class="fopt" data-q="7" data-v="2-5k" onclick="selOpt(this)"><div class="fopt-dot"></div>Entre 2 000 € et 5 000 €</div>
+            <div class="fopt" data-q="7" data-v="1-2k" onclick="selOpt(this)"><div class="fopt-dot"></div>Entre 1 000 € et 2 000 €</div>
+            <div class="fopt" data-q="7" data-v="<1k" onclick="selOpt(this)"><div class="fopt-dot"></div>Moins de 1 000 €</div>
+          </div>
+          <button class="fbtn" onclick="nextFs(7)" id="fsbtn7" disabled>CONTINUER</button>
+        </div>
+        <div class="fstep" id="fs8">
+          <div class="fstep-label">Question 8 / 10</div>
+          <div class="fquestion">Comment tu décrirais ta voix ?</div>
+          <div class="fopts">
+            <div class="fopt" data-q="8" data-v="grave" onclick="selOpt(this)"><div class="fopt-dot"></div>Grave et posée — inspire confiance</div>
+            <div class="fopt" data-q="8" data-v="dynamique" onclick="selOpt(this)"><div class="fopt-dot"></div>Dynamique et énergique</div>
+            <div class="fopt" data-q="8" data-v="douce" onclick="selOpt(this)"><div class="fopt-dot"></div>Douce et chaleureuse</div>
+            <div class="fopt" data-q="8" data-v="juvenile" onclick="selOpt(this)"><div class="fopt-dot"></div>Voix juvénile / voix d'enfant</div>
+          </div>
+          <button class="fbtn" onclick="nextFs(8)" id="fsbtn8" disabled>CONTINUER</button>
+        </div>
+        <div class="fstep" id="fs9">
+          <div class="fstep-label">Question 9 / 10</div>
+          <div class="fquestion">Quand tu commences quelque chose, tu vas jusqu'au bout ?</div>
+          <div class="fopts">
+            <div class="fopt" data-q="9" data-v="toujours" onclick="selOpt(this)"><div class="fopt-dot"></div>Toujours — je lâche jamais</div>
+            <div class="fopt" data-q="9" data-v="souvent" onclick="selOpt(this)"><div class="fopt-dot"></div>Souvent, mais ça m'arrive de décrocher</div>
+            <div class="fopt" data-q="9" data-v="depond" onclick="selOpt(this)"><div class="fopt-dot"></div>Ça dépend de la motivation</div>
+            <div class="fopt" data-q="9" data-v="non" onclick="selOpt(this)"><div class="fopt-dot"></div>Honnêtement, j'ai du mal à tenir</div>
+          </div>
+          <button class="fbtn" onclick="nextFs(9)" id="fsbtn9" disabled>CONTINUER</button>
+        </div>
+        <div class="fstep" id="fs10">
+          <div class="fstep-label">Question 10 / 10</div>
+          <div class="fquestion">Tu veux rajouter quelque chose ?</div>
+          <div class="ffield">
+            <textarea id="freeText" placeholder="Parle-nous de toi, ta motivation… ou laisse vide."></textarea>
+            <div class="free-hint">Facultatif — mais c'est souvent ce qui fait la différence.</div>
+          </div>
+          <button class="fbtn" onclick="nextFs(10)">CONTINUER</button>
+        </div>
+        <div class="fstep" id="fs11">
+          <div class="fstep-label">Tes coordonnées</div>
+          <div class="fquestion">Dernière étape</div>
+          <div class="ffields">
+            <div style="display:flex;gap:.8rem;flex-wrap:wrap">
+              <div class="ffield" style="flex:1;min-width:130px"><label>Prénom</label><input type="text" id="fPrenom" placeholder="Ton prénom"/></div>
+              <div class="ffield" style="flex:1;min-width:130px"><label>Nom</label><input type="text" id="fNom" placeholder="Ton nom"/></div>
+            </div>
+            <div class="ffield"><label>Téléphone</label><input type="tel" id="fPhone" placeholder="+33 6 00 00 00 00"/></div>
+            <div class="ffield"><label>Email</label><input type="email" id="fEmail" placeholder="ton@email.com"/></div>
+            <div class="ffield"><label>@ TikTok principal</label><input type="text" id="fTiktok" placeholder="@username"/></div>
+          </div>
+          <div id="fErr" style="color:var(--accent);font-size:.78rem;margin-top:.5rem;display:none">Merci de remplir tous les champs.</div>
+          <button class="fbtn" onclick="submitForm()">ENVOYER MA CANDIDATURE</button>
+        </div>
+        <div class="fstep" id="fsDone">
+          <div class="status-card">
+            <div class="status-icon">✓</div>
+            <div class="status-title">CANDIDATURE ENVOYÉE</div>
+            <div class="status-line"></div>
+            <div class="status-sub" id="fDoneMsg"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AFFILIÉ -->
+  <div class="view" id="viewAffiliate">
+    <div class="view-title">MON ESPACE AFFILIÉ</div>
+    <div class="stats-row" id="myStats">
+      <div class="sbox"><div class="sval g" id="myStreak">0j</div><div class="slbl">Streak</div></div>
+      <div class="sbox"><div class="sval" id="myWeek">0h</div><div class="slbl">Cette semaine</div></div>
+      <div class="sbox" style="grid-column:span 2"><div class="sval" id="myStatus" style="font-size:1.2rem">—</div><div class="slbl">Statut</div></div>
+    </div>
+    <div class="section-sep">Mes comptes TikTok</div>
+    <div class="add-row">
+      <input class="add-input" id="newTiktok" type="text" placeholder="@username" onkeydown="if(event.key==='Enter')addTiktok()"/>
+      <button class="add-btn" onclick="addTiktok()">+ AJOUTER</button>
+    </div>
+    <div class="items-list" id="tiktokList"></div>
+    <div class="section-sep">Mes jeux / casinos promus</div>
+    <div class="add-row">
+      <input class="add-input" id="newGame" type="text" placeholder="Nom du jeu ou casino" onkeydown="if(event.key==='Enter')addGame()"/>
+      <input class="add-input" id="newPlatform" type="text" placeholder="Plateforme (optionnel)" style="max-width:180px"/>
+      <button class="add-btn" onclick="addGame()">+ AJOUTER</button>
+    </div>
+    <div class="items-list" id="gamesList"></div>
+  </div>
+
+  <!-- ADMIN DASHBOARD -->
+  <div class="view" id="viewAdmin">
+    <div class="stats-row">
+      <div class="sbox"><div class="sval" id="sTotal">0</div><div class="slbl">Affiliés</div></div>
+      <div class="sbox"><div class="sval g" id="sLive">0</div><div class="slbl">En live</div></div>
+      <div class="sbox"><div class="sval" id="sDone">0</div><div class="slbl">A livé</div></div>
+      <div class="sbox"><div class="sval r" id="sOff">0</div><div class="slbl">Absents</div></div>
+    </div>
+    <div class="admin-toolbar">
+      <div class="fbar">
+        <button class="fb on" onclick="setFilter('all',this)">Tous</button>
+        <button class="fb" onclick="setFilter('live',this)">Live</button>
+        <button class="fb" onclick="setFilter('done',this)">A livé</button>
+        <button class="fb" onclick="setFilter('off',this)">Absents</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:.8rem">
+        <span class="last-upd" id="lastUpd"></span>
+        <button class="refresh-btn" onclick="loadAdmin()">↻ REFRESH</button>
+      </div>
+    </div>
+    <div class="aff-grid" id="affGrid"></div>
+  </div>
+
+  <!-- DEPOTS -->
+  <div class="view" id="viewDeposits">
+    <div class="view-title">DÉPÔTS</div>
+    <div id="depositsContent"></div>
+  </div>
+
+  <!-- FORMATION -->
+  <div class="view" id="viewFormation">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.8rem">
+      <div class="view-title" style="margin-bottom:0">FORMATION</div>
+      <div id="adminFormationBtns" style="display:none">
+        <button onclick="openAddModuleModal()" class="add-btn">+ MODULE</button>
+      </div>
+    </div>
+    <div id="formationContent"></div>
+  </div>
+
+  <!-- VIDEO PLAYER MODAL -->
+  <div class="modal-overlay" id="videoModal">
+    <div class="modal-box" style="max-width:800px;width:95vw">
+      <button class="modal-close" onclick="closeVideoModal()">✕</button>
+      <div class="modal-title" id="videoTitle">Chapitre</div>
+      <div id="videoDesc" style="font-size:.85rem;color:var(--muted2);margin-bottom:1rem;line-height:1.5"></div>
+      <div id="videoPlayer" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;background:#000;border:1px solid var(--border)">
+        <iframe id="videoIframe" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none" allowfullscreen></iframe>
+      </div>
+      <div style="margin-top:1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem">
+        <div id="videoChapterInfo" style="font-size:.78rem;color:var(--muted2)"></div>
+        <button id="markDoneBtn" onclick="toggleChapterDone()" class="add-btn" style="font-size:.85rem;padding:.5rem 1rem">Marquer comme vu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD/EDIT MODULE MODAL -->
+  <div class="modal-overlay" id="moduleModal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('moduleModal')">✕</button>
+      <div class="modal-title" id="moduleModalTitle">Nouveau module</div>
+      <div class="ffields" style="gap:.8rem">
+        <div class="ffield"><label>Titre du module</label><input type="text" id="moduleTitle" placeholder="ex: Les bases du live TikTok"/></div>
+        <div class="ffield"><label>Description</label><input type="text" id="moduleDesc" placeholder="Description courte"/></div>
+        <div class="ffield"><label>Image de couverture (URL)</label><input type="text" id="moduleCover" placeholder="https://..."/></div>
+      </div>
+      <input type="hidden" id="moduleEditId"/>
+      <div class="modal-btns">
+        <button class="modal-cancel" onclick="closeModal('moduleModal')">ANNULER</button>
+        <button class="modal-confirm" onclick="saveModule()">SAUVEGARDER</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD/EDIT CHAPTER MODAL -->
+  <div class="modal-overlay" id="chapterModal">
+    <div class="modal-box" style="max-width:480px">
+      <button class="modal-close" onclick="closeModal('chapterModal')">✕</button>
+      <div class="modal-title" id="chapterModalTitle">Nouveau chapitre</div>
+      <div class="ffields" style="gap:.8rem">
+        <div class="ffield"><label>Titre</label><input type="text" id="chapterTitle" placeholder="ex: Comment démarrer un live"/></div>
+        <div class="ffield"><label>Description</label><input type="text" id="chapterDesc" placeholder="Description courte"/></div>
+        <div class="ffield"><label>URL de la vidéo</label><input type="text" id="chapterUrl" placeholder="YouTube ou Vimeo URL"/></div>
+        <div class="ffield"><label>Durée (minutes)</label><input type="number" id="chapterDuration" placeholder="ex: 12"/></div>
+      </div>
+      <input type="hidden" id="chapterEditId"/>
+      <input type="hidden" id="chapterModuleId"/>
+      <div class="modal-btns">
+        <button class="modal-cancel" onclick="closeModal('chapterModal')">ANNULER</button>
+        <button class="modal-confirm" onclick="saveChapter()">SAUVEGARDER</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div class="view" id="viewLeader">
+    <div class="view-title">LEADERBOARD — CETTE SEMAINE</div>
+    <div id="leaderList"></div>
+  </div>
+
+  <!-- STATS -->
+  <div class="view" id="viewStats">
+    <div class="view-title">STATISTIQUES GLOBALES</div>
+    <div id="statsContent"></div>
+  </div>
+
+  <!-- CANDIDATURES -->
+  <div class="view" id="viewApps">
+    <div class="view-title">DEMANDES D'ADHÉSION</div>
+    <div class="app-list" id="appList"></div>
+  </div>
+</div>
+
+<!-- NOTE MODAL -->
+<div class="modal-overlay" id="noteModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('noteModal')">✕</button>
+    <div class="modal-title" id="noteTitle">Note</div>
+    <textarea class="modal-textarea" id="noteInput" placeholder="Ta note privée sur cet affilié..."></textarea>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal('noteModal')">ANNULER</button>
+      <button class="modal-confirm" onclick="saveNote()">SAUVEGARDER</button>
+    </div>
+  </div>
+</div>
+
+<!-- DM MODAL -->
+<div class="modal-overlay" id="msgModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('msgModal')">✕</button>
+    <div class="modal-title" id="msgTitle">Envoyer un DM</div>
+    <textarea class="modal-textarea" id="msgInput" placeholder="Ton message..."></textarea>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal('msgModal')">ANNULER</button>
+      <button class="modal-confirm" onclick="sendMsg()">ENVOYER</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- CALENDAR MODAL -->
+<div class="modal-overlay" id="calModal">
+  <div class="modal-box" style="max-width:480px">
+    <button class="modal-close" onclick="closeModal('calModal')">✕</button>
+    <div class="modal-title" id="calTitle">Calendrier</div>
+    <div id="calBody"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var API = '';
+var me = null;
+var adminData = [];
+var adminFilter = 'all';
+var formAnswers = {};
+var currentFs = 1;
+var TOTAL_FS = 10;
+var noteTargetId = null;
+var msgTargetId = null;
+
+function showTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('view' + name).classList.add('active');
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); if (id === 'videoModal') { var iframe = document.getElementById('videoIframe'); if (iframe) iframe.src = ''; } }
+
+async function init() {
+  try {
+    var res = await fetch(API + '/auth/me', { credentials: 'include' });
+    if (res.ok) {
+      me = await res.json();
+      showApp();
+    }
+  } catch(e) {}
+}
+
+function showApp() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+
+  var av = me.discord_avatar
+    ? 'https://cdn.discordapp.com/avatars/' + me.discord_id + '/' + me.discord_avatar + '.png'
+    : '';
+  document.getElementById('uAvatar').src = av;
+  document.getElementById('uName').textContent = me.discord_username;
+
+  if (me.is_admin) {
+    document.getElementById('tabAdmin').style.display = 'block';
+    document.getElementById('tabApps').style.display = 'block';
+    document.getElementById('tabLeader').style.display = 'block';
+    document.getElementById('tabStats').style.display = 'block';
+    document.getElementById('tabDeposits').style.display = 'block';
+    document.getElementById('tabFormation').style.display = 'block';
+    document.getElementById('adminFormationBtns').style.display = 'block';
+    loadFormations();
+    loadFormationStats();
+    loadAdmin();
+    loadApplications();
+    loadLeaderboard();
+    loadStats();
+    loadDeposits();
+    startLiveFeed();
+    setInterval(loadAdmin, 60000);
+    setInterval(loadLeaderboard, 30000);
+    setInterval(loadDeposits, 30000);
+  }
+
+  if (me.is_affiliate) {
+    document.getElementById('tabAffiliate').style.display = 'block';
+    document.getElementById('tabLeader').style.display = 'block';
+    document.getElementById('tabFormation').style.display = 'block';
+    renderTiktokList(me.tiktok_accounts || []);
+    loadLeaderboard();
+    loadFormations();
+    setInterval(loadLeaderboard, 30000);
+    renderGamesList(me.games || []);
+    var h = Math.floor((me.week_minutes || 0) / 60);
+    var m = (me.week_minutes || 0) % 60;
+    document.getElementById('myStreak').textContent = (me.streak || 0) + 'j';
+    document.getElementById('myWeek').textContent = h > 0 ? h + 'h' + (m > 0 ? m : '') : (m || 0) + 'min';
+    var statusMap = { active: '✅ Actif', warning: '⚠️ Avertissement', suspended: '🔴 Suspendu' };
+    document.getElementById('myStatus').textContent = statusMap[me.affiliate_status] || '—';
+    document.getElementById('choiceView').style.display = 'none';
+    showTab('Affiliate', document.getElementById('tabAffiliate'));
+    return;
+  }
+
+  if (me.has_pending) {
+    document.getElementById('choiceView').style.display = 'none';
+    document.getElementById('pendingView').style.display = 'block';
+    return;
+  }
+
+  if (me.has_rejected) {
+    document.getElementById('choiceView').style.display = 'none';
+    document.getElementById('rejectedView').style.display = 'block';
+    return;
+  }
+
+  checkGuildMembership();
+}
+
+async function checkGuildMembership() {
+  try {
+    var res = await fetch(API + '/check/guild', { credentials: 'include' });
+    var data = await res.json();
+    if (data.is_member) {
+      document.getElementById('alreadyAffBtn').style.display = 'block';
+      document.getElementById('notMemberMsg').style.display = 'none';
+    } else {
+      document.getElementById('alreadyAffBtn').style.display = 'none';
+      document.getElementById('notMemberMsg').style.display = 'block';
+    }
+  } catch(e) {}
+}
+
+async function logout() {
+  await fetch(API + '/auth/logout', { method: 'POST', credentials: 'include' });
+  location.reload();
+}
+
+function showFormView() {
+  document.getElementById('choiceView').style.display = 'none';
+  document.getElementById('formView').style.display = 'block';
+}
+
+function selOpt(el) {
+  var q = el.dataset.q;
+  document.querySelectorAll('[data-q="' + q + '"]').forEach(function(o){ o.classList.remove('sel'); });
+  el.classList.add('sel');
+  formAnswers[q] = el.dataset.v;
+  var btn = document.getElementById('fsbtn' + q);
+  if (btn) btn.disabled = false;
+}
+
+function nextFs(current) {
+  document.getElementById('fs' + current).classList.remove('active');
+  var next = current + 1;
+  document.getElementById('fs' + next).classList.add('active');
+  document.getElementById('fProg').style.width = (next / (TOTAL_FS + 1) * 100) + '%';
+}
+
+async function submitForm() {
+  var prenom = document.getElementById('fPrenom').value.trim();
+  var nom = document.getElementById('fNom').value.trim();
+  var phone = document.getElementById('fPhone').value.trim();
+  var email = document.getElementById('fEmail').value.trim();
+  var fErr = document.getElementById('fErr');
+  if (!prenom || !nom || !phone || !email || email.indexOf('@') < 0) {
+    fErr.style.display = 'block';
+    return;
+  }
+  fErr.style.display = 'none';
+  var payload = {
+    prenom: prenom, nom: nom, phone: phone, email: email,
+    tiktok_account: document.getElementById('fTiktok').value.trim(),
+    tiktok_followers: formAnswers['2'] || '',
+    has_live_access: formAnswers['4'] || '',
+    live_frequency: formAnswers['5'] || '',
+    live_duration: formAnswers['6'] || '',
+    multi_accounts: formAnswers['3'] || '',
+    voice_type: formAnswers['8'] || '',
+    money_goal: formAnswers['7'] || '',
+    seriousness: formAnswers['9'] || '',
+    free_text: document.getElementById('freeText').value.trim()
+  };
+  try {
+    var res = await fetch(API + '/apply', {
+      method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    var data = await res.json();
+    if (data.ok) {
+      document.getElementById('fs11').classList.remove('active');
+      document.getElementById('fsDone').classList.add('active');
+      document.getElementById('fProg').style.width = '100%';
+      document.getElementById('fDoneMsg').textContent = 'Merci ' + prenom + ', on a bien reçu ta candidature. On te recontacte sur Discord.';
+    } else {
+      showToast(data.error || 'Erreur', 'error');
+    }
+  } catch(e) { showToast('Erreur serveur', 'error'); }
+}
+
+function renderTiktokList(accounts) {
+  var el = document.getElementById('tiktokList');
+  if (!accounts.length) { el.innerHTML = '<div class="empty-list">Aucun compte TikTok ajouté.</div>'; return; }
+  var html = '';
+  accounts.forEach(function(a) {
+    var status = a.is_live ? '🟢 En live' : '⚫ Hors ligne';
+    html += '<div class="item-row"><span class="item-main">' + a.tiktok_handle + '</span><span class="item-sub">' + status + '</span><button class="del-btn" data-del-handle="' + encodeURIComponent(a.tiktok_handle) + '" onclick="deleteTiktokBtn(this)">&#x2715;</button></div>';
+  });
+  el.innerHTML = html;
+}
+
+async function addTiktok() {
+  var h = document.getElementById('newTiktok').value.trim();
+  if (!h) return;
+  if (h.charAt(0) !== '@') h = '@' + h;
+  var res = await fetch(API + '/accounts', {
+    method: 'POST', credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tiktok_handle: h })
+  });
+  var data = await res.json();
+  if (data.ok) {
+    document.getElementById('newTiktok').value = '';
+    var m2 = await (await fetch(API + '/auth/me', { credentials: 'include' })).json();
+    renderTiktokList(m2.tiktok_accounts || []);
+    showToast('Compte ajouté ✓', 'success');
+  } else showToast(data.error, 'error');
+}
+
+async function deleteTiktok(handle) {
+  await fetch(API + '/accounts/' + encodeURIComponent(handle), { method: 'DELETE', credentials: 'include' });
+  var m2 = await (await fetch(API + '/auth/me', { credentials: 'include' })).json();
+  renderTiktokList(m2.tiktok_accounts || []);
+}
+
+function renderGamesList(games) {
+  var el = document.getElementById('gamesList');
+  if (!games.length) { el.innerHTML = '<div class="empty-list">Aucun jeu ou casino ajouté.</div>'; return; }
+  var html = '';
+  games.forEach(function(g) {
+    html += '<div class="item-row"><span class="item-main">' + g.game_name + '</span><span class="item-sub">' + (g.platform || '') + '</span><button class="del-btn" data-del-game="' + g.id + '" onclick="deleteGameBtn(this)">&#x2715;</button></div>';
+  });
+  el.innerHTML = html;
+}
+
+async function addGame() {
+  var name = document.getElementById('newGame').value.trim();
+  var platform = document.getElementById('newPlatform').value.trim();
+  if (!name) return;
+  var res = await fetch(API + '/games', {
+    method: 'POST', credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ game_name: name, platform: platform })
+  });
+  var data = await res.json();
+  if (data.ok) {
+    document.getElementById('newGame').value = '';
+    document.getElementById('newPlatform').value = '';
+    var games = await (await fetch(API + '/games', { credentials: 'include' })).json();
+    renderGamesList(games);
+    showToast('Jeu ajouté ✓', 'success');
+  } else showToast(data.error, 'error');
+}
+
+async function deleteGame(id) {
+  await fetch(API + '/games/' + id, { method: 'DELETE', credentials: 'include' });
+  var games = await (await fetch(API + '/games', { credentials: 'include' })).json();
+  renderGamesList(games);
+}
+
+async function loadAdmin() {
+  try {
+    var res = await fetch(API + '/admin/dashboard', { credentials: 'include' });
+    if (!res.ok) return;
+    adminData = await res.json();
+    renderAdmin();
+    var el = document.getElementById('lastUpd');
+    if (el) el.textContent = 'Màj ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  } catch(e) {}
+}
+
+function setFilter(f, btn) {
+  adminFilter = f;
+  document.querySelectorAll('.fb').forEach(function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+  renderAdmin();
+}
+
+function durStr(mins) {
+  if (!mins) return '—';
+  var h = Math.floor(mins / 60), m = mins % 60;
+  return h > 0 ? h + 'h' + (m > 0 ? m + 'min' : '') : m + 'min';
+}
+
+function renderAdmin() {
+  var total = adminData.length;
+  var live = adminData.filter(function(u){ return u.is_live; }).length;
+  var done = adminData.filter(function(u){ return !u.is_live && u.today_minutes > 0; }).length;
+  var off = adminData.filter(function(u){ return !u.is_live && u.today_minutes === 0; }).length;
+
+  document.getElementById('sTotal').textContent = total;
+  document.getElementById('sLive').textContent = live;
+  document.getElementById('sDone').textContent = done;
+  document.getElementById('sOff').textContent = off;
+
+  var list = adminData;
+  if (adminFilter === 'live') list = adminData.filter(function(u){ return u.is_live; });
+  else if (adminFilter === 'done') list = adminData.filter(function(u){ return !u.is_live && u.today_minutes > 0; });
+  else if (adminFilter === 'off') list = adminData.filter(function(u){ return !u.is_live && u.today_minutes === 0; });
+
+  var grid = document.getElementById('affGrid');
+  if (!list.length) {
+    grid.innerHTML = '<div class="no-aff"><strong>Aucun affilié</strong>Personne ne correspond.</div>';
+    return;
+  }
+
+  var html = '';
+  list.forEach(function(u) {
+    var avHtml = u.discord_avatar
+      ? '<img src="https://cdn.discordapp.com/avatars/' + u.discord_id + '/' + u.discord_avatar + '.png" class="aff-av" alt=""/>'
+      : '<div class="aff-av">' + u.discord_username.charAt(0).toUpperCase() + '</div>';
+
+    var accountsHtml = '';
+    if (u.accounts && u.accounts.length) {
+      u.accounts.forEach(function(a) {
+        var pct = Math.min(100, (a.today_minutes / 120) * 100);
+        accountsHtml += '<div class="aff-arow"><span><span class="dot ' + (a.is_live ? 'dl' : 'dof') + '"></span>' + a.handle + '</span>';
+        accountsHtml += '<div class="dur-wrap"><div class="dur-bar"><div class="dur-fill" style="width:' + pct + '%"></div></div>' + durStr(a.today_minutes) + '</div></div>';
+      });
+    } else {
+      accountsHtml = '<div style="font-size:.78rem;color:var(--muted);padding:.3rem">Aucun compte TikTok</div>';
+    }
+
+    var gamesHtml = '';
+    if (u.games && u.games.length) {
+      u.games.forEach(function(g) {
+        gamesHtml += '<span class="game-tag">' + g.game_name + (g.platform ? ' · ' + g.platform : '') + '</span>';
+      });
+    }
+
+    var weekH = Math.floor(u.week_minutes / 60), weekM = u.week_minutes % 60;
+    var weekStr = weekH > 0 ? weekH + 'h' + (weekM > 0 ? weekM + 'min' : '') : weekM + 'min';
+
+    var statusBadge = '';
+    if (u.affiliate_status && u.affiliate_status !== 'active') {
+      var statusColor = u.affiliate_status === 'warning' ? '#ffb800' : 'var(--accent)';
+      statusBadge = '<span style="font-size:.62rem;padding:1px 6px;border:1px solid ' + statusColor + ';color:' + statusColor + '">' + u.affiliate_status.toUpperCase() + '</span>';
+    }
+
+    var absenceHtml = u.absence_reason
+      ? '<div class="absence-reason">💬 Absent aujourd\'hui : "' + u.absence_reason + '"</div>'
+      : '';
+
+    var noteHtml = u.admin_note
+      ? '<div class="admin-note">📝 ' + u.admin_note + '</div>'
+      : '';
+
+    var noteId = u.discord_id;
+    var noteName = u.discord_username;
+    var noteVal = (u.admin_note || '').replace(/"/g, '&quot;');
+
+    html += '<div class="aff-card" data-discord-id="' + u.discord_id + '">';
+    html += '<div class="aff-head">' + avHtml;
+    html += '<div><div class="aff-name">' + u.discord_username + '</div><div class="aff-disc">discord</div></div>';
+    html += '<span class="live-badge ' + (u.is_live ? 'badge-live' : 'badge-off') + '">' + (u.is_live ? '● Live' : 'Hors ligne') + '</span>';
+    html += '</div>';
+    html += '<div class="aff-accounts">' + accountsHtml + '</div>';
+    if (gamesHtml) html += '<div class="aff-games">' + gamesHtml + '</div>';
+    html += '<div class="aff-mini-stat">';
+    html += '<span>🔥 ' + u.streak + 'j</span>';
+    html += '<span>· Semaine: ' + weekStr + '</span>';
+    html += '<span>· ' + u.week_days_lived + '/7 jours</span>';
+    html += statusBadge;
+    html += '</div>';
+    html += absenceHtml;
+    html += noteHtml;
+    html += goalBar(u.today_minutes);
+    html += '<div class="aff-actions">';
+    html += '<button data-note-id="' + noteId + '" data-note-name="' + noteName + '" data-note-val="' + noteVal + '" class="aff-action-btn note-btn">&#9999;&#65039; Note</button>';
+    html += '<button data-kick-id="' + noteId + '" data-kick-name="' + noteName + '" class="aff-action-btn" style="border-color:var(--accent);color:var(--accent)" onclick="handleKick(this)">&#128683; Kick</button>';
+    html += '<button data-msg-id="' + noteId + '" data-msg-name="' + noteName + '" class="aff-action-btn msg-btn">&#128233; DM</button>';
+    html += '<select class="aff-status-sel" onchange="setAffStatus(\'' + noteId + '\',this.value)">';
+    html += '<option value="active"' + (u.affiliate_status === 'active' ? ' selected' : '') + '>Actif</option>';
+    html += '<option value="warning"' + (u.affiliate_status === 'warning' ? ' selected' : '') + '>Avertissement</option>';
+    html += '<option value="suspended"' + (u.affiliate_status === 'suspended' ? ' selected' : '') + '>Suspendu</option>';
+    html += '</select>';
+    html += '</div></div>';
+  });
+  grid.innerHTML = html;
+}
+
+var labelMap = {
+  tiktok_followers: { label: 'Abonnés TikTok', vals: { '1000+': '1 000+', 'moins_1000': '< 1 000', 'non': 'Pas de compte' } },
+  has_live_access: { label: 'Accès lives', vals: { 'oui': '✅ Oui', 'non': '❌ Non' } },
+  live_frequency: { label: 'Fréquence', vals: { 'tous_jours': 'Tous les jours', '5-6j': '5-6j/sem', '3-4j': '3-4j/sem', 'moins': '1-2j' } },
+  live_duration: { label: 'Durée / live', vals: { '2h+': '2h+', '1-2h': '1-2h', '30-60min': '30-60min', '<30min': '<30min' } },
+  money_goal: { label: 'Objectif', vals: { '5k+': '5 000€+', '2-5k': '2-5k€', '1-2k': '1-2k€', '<1k': '<1k€' } },
+  voice_type: { label: 'Voix', vals: { 'grave': 'Grave/posée', 'dynamique': 'Dynamique', 'douce': 'Douce', 'juvenile': '⚠️ Juvénile' } },
+  seriousness: { label: 'Sérieux', vals: { 'toujours': '✅ Toujours', 'souvent': 'Souvent', 'depond': 'Dépend', 'non': '❌ Difficile' } },
+  multi_accounts: { label: 'Multi-comptes', vals: { 'oui': '✅ Oui', 'non': 'Non' } }
+};
+
+async function loadApplications() {
+  try {
+    var res = await fetch(API + '/admin/applications', { credentials: 'include' });
+    if (!res.ok) return;
+    var apps = await res.json();
+    renderApplications(apps);
+    var pending = apps.filter(function(a){ return a.status === 'pending'; }).length;
+    var badge = document.getElementById('pendingBadge');
+    if (pending > 0) { badge.textContent = pending; badge.style.display = 'inline'; }
+    else badge.style.display = 'none';
+  } catch(e) {}
+}
+
+function leadBadge(lead, score) {
+  var colors = { hot: 'var(--accent)', mid: '#ffb800', cold: 'var(--muted2)' };
+  var labels = { hot: '🔥 CHAUD', mid: '🟡 MID', cold: '🧊 FROID' };
+  var c = colors[lead] || 'var(--muted2)';
+  var l = labels[lead] || lead;
+  return '<span style="font-size:.65rem;padding:2px 8px;border:1px solid ' + c + ';color:' + c + '">' + l + ' · ' + score + '/24</span>';
+}
+
+function renderApplications(apps) {
+  var el = document.getElementById('appList');
+  if (!apps.length) {
+    el.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--muted2);font-size:.88rem;background:var(--surf)">Aucune candidature.</div>';
+    return;
+  }
+  var html = '';
+  apps.forEach(function(a) {
+    var avHtml = a.discord_avatar
+      ? '<img src="https://cdn.discordapp.com/avatars/' + a.discord_id + '/' + a.discord_avatar + '.png" class="aff-av" alt=""/>'
+      : '<div class="aff-av">' + a.discord_username.charAt(0).toUpperCase() + '</div>';
+
+    var badgeClass = a.status === 'pending' ? 'badge-pending' : a.status === 'accepted' ? 'badge-accepted' : 'badge-rejected';
+    var badgeLabel = a.status === 'pending' ? 'En attente' : a.status === 'accepted' ? 'Accepté' : 'Refusé';
+
+    var answersHtml = '';
+    Object.keys(labelMap).forEach(function(key) {
+      var meta = labelMap[key];
+      var val = a[key];
+      if (!val) return;
+      var display = meta.vals[val] || val;
+      var isHi = ['money_goal', 'live_frequency', 'seriousness'].indexOf(key) >= 0;
+      answersHtml += '<div class="app-answer"><div class="app-answer-label">' + meta.label + '</div><div class="app-answer-val' + (isHi ? ' hi' : '') + '">' + display + '</div></div>';
+    });
+
+    var btns = a.status === 'pending'
+      ? '<div class="app-btns"><button class="btn-accept" onclick="acceptApp(' + a.id + ')">✓ ACCEPTER</button><button class="btn-reject" onclick="rejectApp(' + a.id + ')">✕ REFUSER</button></div>'
+      : '';
+
+    html += '<div class="app-card">';
+    html += '<div class="aff-head">' + avHtml;
+    html += '<div><div class="aff-name">' + a.discord_username + '</div><div style="font-size:.72rem;color:var(--muted2)">' + (a.prenom || '') + ' ' + (a.nom || '') + '</div></div>';
+    html += '<span class="app-badge ' + badgeClass + '">' + badgeLabel + '</span>';
+    html += '</div>';
+    html += '<div style="margin-bottom:.8rem">' + leadBadge(a.lead, a.score) + '</div>';
+    html += '<div style="display:flex;gap:.8rem;flex-wrap:wrap;font-size:.78rem;color:var(--muted2);margin-bottom:.8rem">';
+    if (a.email) html += '<span>📧 ' + a.email + '</span>';
+    if (a.phone) html += '<span>📱 ' + a.phone + '</span>';
+    if (a.tiktok_account) html += '<span>🎵 ' + a.tiktok_account + '</span>';
+    html += '</div>';
+    html += '<div class="app-answers">' + answersHtml + '</div>';
+    if (a.free_text) html += '<div style="background:var(--surf2);border:1px solid var(--border);padding:.7rem .9rem;font-size:.82rem;color:var(--muted2);line-height:1.5;font-style:italic;margin-bottom:.8rem">"' + a.free_text + '"</div>';
+    html += btns + '</div>';
+  });
+  el.innerHTML = html;
+}
+
+async function acceptApp(id) {
+  var res = await fetch(API + '/admin/applications/' + id + '/accept', { method: 'POST', credentials: 'include' });
+  var data = await res.json();
+  if (data.ok) { showToast('Affilié accepté — ajouté au serveur ✓', 'success'); loadApplications(); loadAdmin(); }
+  else showToast(data.error || 'Erreur', 'error');
+}
+
+async function rejectApp(id) {
+  var res = await fetch(API + '/admin/applications/' + id + '/reject', { method: 'POST', credentials: 'include' });
+  var data = await res.json();
+  if (data.ok) { showToast('Candidature refusée', 'success'); loadApplications(); }
+  else showToast(data.error || 'Erreur', 'error');
+}
+
+function openNoteModal(id, name, note) {
+  noteTargetId = id;
+  document.getElementById('noteTitle').textContent = 'Note — ' + name;
+  document.getElementById('noteInput').value = note || '';
+  openModal('noteModal');
+}
+
+async function saveNote() {
+  var note = document.getElementById('noteInput').value.trim();
+  await fetch(API + '/admin/affiliates/' + noteTargetId, {
+    method: 'PATCH', credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ admin_note: note })
+  });
+  closeModal('noteModal');
+  loadAdmin();
+  showToast('Note sauvegardée ✓', 'success');
+}
+
+function openMsgModal(id, name) {
+  msgTargetId = id;
+  document.getElementById('msgTitle').textContent = 'DM → ' + name;
+  document.getElementById('msgInput').value = '';
+  openModal('msgModal');
+}
+
+async function sendMsg() {
+  var content = document.getElementById('msgInput').value.trim();
+  if (!content) return;
+  var res = await fetch(API + '/admin/message/' + msgTargetId, {
+    method: 'POST', credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content: content })
+  });
+  var data = await res.json();
+  closeModal('msgModal');
+  showToast(data.ok ? 'Message envoyé ✓' : 'Erreur', data.ok ? 'success' : 'error');
+}
+
+async function setAffStatus(id, status) {
+  await fetch(API + '/admin/affiliates/' + id, {
+    method: 'PATCH', credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: status })
+  });
+  showToast('Statut mis à jour ✓', 'success');
+}
+
+
+
+// ── OBJECTIF QUOTIDIEN ────────────────────────────────────────
+var DAILY_GOAL_MINUTES = 120; // 2h par défaut
+
+function goalBar(minutes) {
+  var pct = Math.min(100, Math.round((minutes / DAILY_GOAL_MINUTES) * 100));
+  var color = pct >= 100 ? 'var(--live)' : pct >= 50 ? '#ffb800' : 'var(--accent)';
+  var label = pct >= 100 ? '✅ Objectif atteint' : pct + '% de l\'objectif';
+  return '<div style="margin-top:.5rem">'
+    + '<div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted2);margin-bottom:3px"><span>Objectif du jour</span><span>' + label + '</span></div>'
+    + '<div style="height:4px;background:var(--border2);border-radius:2px"><div style="height:100%;width:' + pct + '%;background:' + color + ';border-radius:2px;transition:width .4s"></div></div>'
+    + '</div>';
+}
+
+// ── CALENDRIER ────────────────────────────────────────────────
+async function openCalendar(id, name) {
+  try {
+    var res = await fetch(API + '/admin/calendar/' + id, { credentials: 'include' });
+    var logs = await res.json();
+    renderCalendarModal(name, logs);
+  } catch(e) {}
+}
+
+function renderCalendarModal(name, logs) {
+  var logMap = {};
+  logs.forEach(function(l) { logMap[l.date] = l; });
+
+  var html = '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:1rem">';
+  var days = ['L','M','M','J','V','S','D'];
+  days.forEach(function(d) {
+    html += '<div style="text-align:center;font-size:.65rem;color:var(--muted2);padding:2px">' + d + '</div>';
+  });
+  html += '</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">';
+
+  // Last 28 days
+  for (var i = 27; i >= 0; i--) {
+    var d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+    var dateStr = d.toISOString().split('T')[0];
+    var log = logMap[dateStr];
+    var color = 'var(--border2)';
+    var title = dateStr;
+    if (log && log.did_live) {
+      var h = Math.floor(log.total_minutes / 60), m = log.total_minutes % 60;
+      var pct = Math.min(100, log.total_minutes / DAILY_GOAL_MINUTES);
+      if (pct >= 1) color = 'var(--live)';
+      else if (pct >= 0.5) color = '#ffb800';
+      else color = '#336644';
+      title = dateStr + ' — ' + (h > 0 ? h + 'h' + m : m + 'min');
+    }
+    var isToday = dateStr === new Date().toISOString().split('T')[0];
+    var border = isToday ? '2px solid var(--accent)' : '1px solid var(--border)';
+    html += '<div title="' + title + '" style="aspect-ratio:1;background:' + color + ';border:' + border + ';border-radius:2px"></div>';
+  }
+  html += '</div>';
+  html += '<div style="display:flex;gap:1rem;margin-top:1rem;font-size:.72rem;color:var(--muted2)">';
+  html += '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--live);display:inline-block"></span>Objectif atteint</span>';
+  html += '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#ffb800;display:inline-block"></span>>50%</span>';
+  html += '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--border2);display:inline-block"></span>Absent</span>';
+  html += '</div>';
+
+  document.getElementById('calTitle').textContent = 'Calendrier — ' + name;
+  document.getElementById('calBody').innerHTML = html;
+  openModal('calModal');
+}
+
+// ── STATS GLOBALES ────────────────────────────────────────────
+async function loadStats() {
+  try {
+    var res = await fetch(API + '/admin/stats', { credentials: 'include' });
+    if (!res.ok) return;
+    var data = await res.json();
+    renderStats(data);
+  } catch(e) {}
+}
+
+function renderStats(data) {
+  var el = document.getElementById('statsContent');
+  var html = '';
+
+  // KPI row
+  html += '<div class="stats-row" style="margin-bottom:2rem">';
+  html += '<div class="sbox"><div class="sval">' + data.totalAffiliates + '</div><div class="slbl">Affiliés actifs</div></div>';
+  html += '<div class="sbox"><div class="sval g">' + data.todayLive + '</div><div class="slbl">En live maintenant</div></div>';
+  html += '<div class="sbox"><div class="sval">' + data.totalApplications + '</div><div class="slbl">Candidatures total</div></div>';
+  html += '<div class="sbox"><div class="sval r">' + data.pendingApplications + '</div><div class="slbl">En attente</div></div>';
+  html += '</div>';
+
+  // 7 jours graph
+  html += '<div style="font-family:Bebas Neue,sans-serif;font-size:1rem;letter-spacing:.1em;color:var(--muted2);margin-bottom:1rem">HEURES DE LIVE — 7 DERNIERS JOURS</div>';
+  var maxMin = Math.max.apply(null, data.days.map(function(d){ return d.total_minutes; })) || 1;
+  html += '<div style="display:flex;align-items:flex-end;gap:8px;height:160px;border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:.5rem">';
+  data.days.forEach(function(d) {
+    var pct = Math.round((d.total_minutes / maxMin) * 100);
+    var h = Math.floor(d.total_minutes / 60), m = d.total_minutes % 60;
+    var label = h > 0 ? h + 'h' + (m > 0 ? m : '') : m + 'min';
+    var dayLabel = new Date(d.date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' });
+    var isToday = d.date === new Date().toISOString().split('T')[0];
+    var barColor = isToday ? 'var(--accent)' : 'var(--surf2)';
+    html += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">';
+    html += '<div style="font-size:.65rem;color:var(--muted2)">' + (d.total_minutes > 0 ? label : '') + '</div>';
+    html += '<div style="width:100%;background:' + barColor + ';height:' + pct + '%;border:1px solid var(--border2);min-height:2px;transition:height .4s;position:relative"></div>';
+    html += '</div>';
+  });
+  html += '</div>';
+  html += '<div style="display:flex;gap:8px">';
+  data.days.forEach(function(d) {
+    var dayLabel = new Date(d.date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'short' });
+    html += '<div style="flex:1;text-align:center;font-size:.65rem;color:var(--muted2)">' + dayLabel + '</div>';
+  });
+  html += '</div>';
+
+  // Participation par jour
+  html += '<div style="font-family:Bebas Neue,sans-serif;font-size:1rem;letter-spacing:.1em;color:var(--muted2);margin:2rem 0 1rem">PARTICIPATION PAR JOUR</div>';
+  html += '<div style="display:flex;flex-direction:column;gap:.5rem">';
+  data.days.forEach(function(d) {
+    var total = data.totalAffiliates || 1;
+    var pct = total > 0 ? Math.round((d.affiliates_lived / total) * 100) : 0;
+    var dayLabel = new Date(d.date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'short' });
+    var barColor = pct >= 80 ? 'var(--live)' : pct >= 50 ? '#ffb800' : 'var(--accent)';
+    html += '<div style="display:flex;align-items:center;gap:.8rem">';
+    html += '<div style="font-size:.75rem;color:var(--muted2);min-width:100px">' + dayLabel + '</div>';
+    html += '<div style="flex:1;height:6px;background:var(--border2);border-radius:3px"><div style="height:100%;width:' + pct + '%;background:' + barColor + ';border-radius:3px"></div></div>';
+    html += '<div style="font-size:.75rem;color:var(--muted2);min-width:60px;text-align:right">' + d.affiliates_lived + '/' + total + ' (' + pct + '%)</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  el.innerHTML = html;
+}
+
+
+// ── TEMPS REEL SSE ────────────────────────────────────────────
+var sseSource = null;
+
+function startLiveFeed() {
+  if (sseSource) sseSource.close();
+  sseSource = new EventSource(API + '/admin/live-feed');
+  sseSource.onmessage = function(e) {
+    try {
+      var data = JSON.parse(e.data);
+      updateLiveCards(data);
+    } catch(err) {}
+  };
+  sseSource.onerror = function() {
+    setTimeout(startLiveFeed, 5000);
+  };
+}
+
+function updateLiveCards(liveData) {
+  // Met à jour les statuts live en temps réel sans recharger tout le dashboard
+  liveData.forEach(function(u) {
+    var card = document.querySelector('[data-discord-id="' + u.discord_id + '"]');
+    if (!card) return;
+    var badge = card.querySelector('.live-badge');
+    if (badge) {
+      badge.className = 'live-badge ' + (u.is_live ? 'badge-live' : 'badge-off');
+      badge.textContent = u.is_live ? '● Live' : 'Hors ligne';
+    }
+  });
+  // Update stats
+  var live = liveData.filter(function(u){ return u.is_live; }).length;
+  var liveEl = document.getElementById('sLive');
+  if (liveEl) liveEl.textContent = live;
+}
+
+// ── LEADERBOARD PUBLIC ────────────────────────────────────────
+async function loadLeaderboard() {
+  try {
+    var res = await fetch(API + '/leaderboard', { credentials: 'include' });
+    if (!res.ok) return;
+    var data = await res.json();
+    renderLeaderboard(data);
+  } catch(e) {}
+}
+
+function renderLeaderboard(board) {
+  var el = document.getElementById('leaderList');
+  if (!board.length) { el.innerHTML = '<div class="no-aff">Aucun affilié.</div>'; return; }
+
+  var html = '<div style="display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border)">';
+  board.forEach(function(u, i) {
+    var av = u.discord_avatar
+      ? '<img src="https://cdn.discordapp.com/avatars/' + u.discord_id + '/' + u.discord_avatar + '.png" class="aff-av" style="width:32px;height:32px" alt=""/>'
+      : '<div class="aff-av" style="width:32px;height:32px">' + u.discord_username.charAt(0).toUpperCase() + '</div>';
+
+    var weekH = Math.floor(u.week_minutes / 60), weekM = u.week_minutes % 60;
+    var weekStr = weekH > 0 ? weekH + 'h' + (weekM > 0 ? weekM : '') : weekM + 'min';
+    var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1) + '.';
+    var rankColor = i === 0 ? 'var(--live)' : i === 1 ? '#c0c0c0' : i === 2 ? '#cd7f32' : 'var(--muted2)';
+    var todayStatus = u.today_done ? '✅' : '❌';
+    var pct = Math.min(100, Math.round((u.week_minutes / (7 * DAILY_GOAL_MINUTES)) * 100));
+    var depotStr = u.week_deposits > 0 ? '💰 ' + u.week_deposits + ' dépôts' : '';
+
+    html += '<div style="background:var(--surf);padding:1rem 1.4rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap">';
+    html += '<span style="font-family:Bebas Neue,sans-serif;font-size:1.4rem;color:' + rankColor + ';min-width:32px">' + medal + '</span>';
+    html += av;
+    html += '<div style="flex:1;min-width:120px">';
+    html += '<div style="font-weight:500;font-size:.9rem">' + u.discord_username + '</div>';
+    html += '<div style="font-size:.72rem;color:var(--muted2);margin-top:2px">🔥 ' + u.streak + 'j · ' + u.week_days + '/7 jours' + (depotStr ? ' · ' + depotStr : '') + '</div>';
+    html += '<div style="height:3px;background:var(--border2);margin-top:6px;border-radius:2px"><div style="height:100%;width:' + pct + '%;background:var(--accent);border-radius:2px"></div></div>';
+    html += '</div>';
+    html += '<div style="text-align:right">';
+    html += '<div style="font-family:Bebas Neue,sans-serif;font-size:1.5rem;color:var(--text)">' + weekStr + '</div>';
+    html += '<div style="font-size:.7rem;color:var(--muted2)">cette semaine</div>';
+    html += '<div style="font-size:.75rem;margin-top:2px">Auj: ' + todayStatus + '</div>';
+    html += '</div>';
+    if (me && me.is_admin) {
+      html += '<button data-cal-id="' + u.discord_id + '" data-cal-name="' + u.discord_username + '" class="aff-action-btn cal-btn" style="font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px">&#128197; Calendrier</button>';
+    }
+    html += '</div>';
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+// ── DEPOTS ────────────────────────────────────────────────────
+async function loadDeposits() {
+  try {
+    var res = await fetch(API + '/admin/deposits', { credentials: 'include' });
+    if (!res.ok) return;
+    var data = await res.json();
+    renderDeposits(data);
+  } catch(e) {}
+}
+
+function renderDeposits(data) {
+  var el = document.getElementById('depositsContent');
+  var html = '';
+
+  // Stats rapides
+  var todayTotal = data.today.reduce(function(s, d){ return s + d.count; }, 0);
+  var weekTotal = data.week.reduce(function(s, d){ return s + d.total; }, 0);
+  html += '<div class="stats-row" style="margin-bottom:2rem">';
+  html += '<div class="sbox"><div class="sval g">' + todayTotal + '</div><div class="slbl">Dépôts aujourd\'hui</div></div>';
+  html += '<div class="sbox"><div class="sval">' + weekTotal + '</div><div class="slbl">Cette semaine</div></div>';
+  html += '<div class="sbox"><div class="sval r">' + data.today.length + '</div><div class="slbl">Affiliés actifs auj.</div></div>';
+  html += '<div class="sbox"><div class="sval">' + (data.all.length > 0 ? data.all[0].discord_username : '—') + '</div><div class="slbl">Top affilié total</div></div>';
+  html += '</div>';
+
+  // Dépôts du jour
+  html += '<div style="font-family:Bebas Neue,sans-serif;font-size:1rem;letter-spacing:.1em;color:var(--muted2);margin-bottom:1rem">DEPOT DU JOUR</div>';
+  if (!data.today.length) {
+    html += '<div class="empty-list" style="margin-bottom:2rem">Aucun depot enregistré aujourd\'hui. Les affiliés peuvent faire /depot N sur Discord.</div>';
+  } else {
+    html += '<div style="display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:2rem">';
+    data.today.forEach(function(d) {
+      html += '<div style="background:var(--surf);padding:.9rem 1.2rem;display:flex;align-items:center;justify-content:space-between">';
+      html += '<span style="font-weight:500">' + d.discord_username + '</span>';
+      html += '<span style="font-family:Bebas Neue,sans-serif;font-size:1.3rem;color:var(--live)">' + d.count + ' dépôt' + (d.count > 1 ? 's' : '') + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Classement total
+  html += '<div style="font-family:Bebas Neue,sans-serif;font-size:1rem;letter-spacing:.1em;color:var(--muted2);margin-bottom:1rem">CLASSEMENT TOTAL</div>';
+  if (!data.all.length) {
+    html += '<div class="empty-list">Aucun historique de dépôts.</div>';
+  } else {
+    var maxTotal = data.all[0].total || 1;
+    html += '<div style="display:flex;flex-direction:column;gap:.6rem">';
+    data.all.forEach(function(d, i) {
+      var pct = Math.round((d.total / maxTotal) * 100);
+      html += '<div style="display:flex;align-items:center;gap:.8rem">';
+      html += '<span style="font-size:.8rem;color:var(--muted2);min-width:24px">' + (i + 1) + '.</span>';
+      html += '<span style="font-weight:500;font-size:.88rem;min-width:120px">' + d.discord_username + '</span>';
+      html += '<div style="flex:1;height:6px;background:var(--border2);border-radius:3px"><div style="height:100%;width:' + pct + '%;background:var(--accent);border-radius:3px"></div></div>';
+      html += '<span style="font-family:Bebas Neue,sans-serif;font-size:1.1rem;min-width:60px;text-align:right">' + d.total + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  el.innerHTML = html;
+}
+
+
+// ── FORMATION ─────────────────────────────────────────────────
+var formations = [];
+var currentChapterId = null;
+var currentChapterCompleted = false;
+
+async function loadFormations() {
+  try {
+    var res = await fetch(API + '/formations', { credentials: 'include' });
+    if (!res.ok) return;
+    formations = await res.json();
+    renderFormations(formations);
+  } catch(e) {}
+}
+
+function extractVideoId(url, type) {
+  if (!url) return '';
+  if (type === 'vimeo' || url.includes('vimeo')) {
+    var m = url.match(/vimeo\.com\/(\d+)/);
+    return m ? m[1] : url;
+  }
+  // YouTube
+  var m2 = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+  return m2 ? m2[1] : url;
+}
+
+function getEmbedUrl(url, type) {
+  if (!url) return '';
+  var id = extractVideoId(url, type);
+  if (type === 'vimeo' || url.includes('vimeo')) {
+    return 'https://player.vimeo.com/video/' + id + '?autoplay=1';
+  }
+  return 'https://www.youtube.com/embed/' + id + '?autoplay=1';
+}
+
+function durStr2(mins) {
+  if (!mins) return '';
+  var h = Math.floor(mins / 60), m = mins % 60;
+  return h > 0 ? h + 'h' + (m > 0 ? m + 'min' : '') : m + 'min';
+}
+
+function renderFormations(mods) {
+  var el = document.getElementById('formationContent');
+  if (!mods.length) {
+    el.innerHTML = '<div class="empty-list">' + (me && me.is_admin ? 'Aucun module. Clique sur + MODULE pour commencer.' : 'Aucune formation disponible pour le moment.') + '</div>';
+    return;
+  }
+
+  var html = '';
+
+  mods.forEach(function(mod) {
+    var totalMins = mod.chapters.reduce(function(s, ch){ return s + (ch.duration_minutes || 0); }, 0);
+    var pct = mod.progress_pct;
+    var pctColor = pct === 100 ? 'var(--live)' : pct > 0 ? '#ffb800' : 'var(--muted)';
+
+    html += '<div style="margin-bottom:2rem">';
+
+    // Module header
+    html += '<div style="background:var(--surf);border:1px solid var(--border);padding:1.2rem 1.4rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap">';
+    if (mod.cover_url) {
+      html += '<img src="' + mod.cover_url + '" style="width:60px;height:60px;object-fit:cover;border:1px solid var(--border2)" onerror="this.style.display=\'none\'"/>';
+    }
+    html += '<div style="flex:1;min-width:150px">';
+    html += '<div style="font-family:Bebas Neue,sans-serif;font-size:1.2rem;letter-spacing:.06em">' + mod.title + '</div>';
+    if (mod.description) html += '<div style="font-size:.8rem;color:var(--muted2);margin-top:.2rem">' + mod.description + '</div>';
+    html += '<div style="font-size:.72rem;color:var(--muted2);margin-top:.4rem">' + mod.total_chapters + ' chapitre' + (mod.total_chapters > 1 ? 's' : '') + (totalMins > 0 ? ' · ' + durStr2(totalMins) : '') + '</div>';
+    html += '</div>';
+
+    // Progress
+    html += '<div style="min-width:120px;text-align:right">';
+    html += '<div style="font-family:Bebas Neue,sans-serif;font-size:1.4rem;color:' + pctColor + '">' + pct + '%</div>';
+    html += '<div style="font-size:.7rem;color:var(--muted2)">' + mod.completed_chapters + '/' + mod.total_chapters + ' vus</div>';
+    html += '<div style="height:3px;background:var(--border2);margin-top:4px;width:100px;border-radius:2px"><div style="height:100%;width:' + pct + '%;background:' + pctColor + ';border-radius:2px"></div></div>';
+    html += '</div>';
+
+    // Admin buttons
+    if (me && me.is_admin) {
+      html += '<div style="display:flex;gap:.4rem">';
+      html += '<button data-mod-id="' + mod.id + '" data-mod-title="' + mod.title.replace(/"/g, '&quot;') + '" data-mod-desc="' + (mod.description || '').replace(/"/g, '&quot;') + '" data-mod-cover="' + (mod.cover_url || '') + '" class="aff-action-btn edit-mod-btn">&#9999;&#65039;</button>';
+      html += '<button data-module-id="' + mod.id + '" class="aff-action-btn add-ch-btn">+ Chapitre</button>';
+      html += '<button data-del-mod="' + mod.id + '" class="aff-action-btn" style="color:var(--accent)" onclick="deleteModuleBtn(this)">&#128465;&#65039;</button>';
+      html += '</div>';
+    }
+    html += '</div>';
+
+    // Chapters list
+    if (mod.chapters.length) {
+      html += '<div style="border:1px solid var(--border);border-top:none">';
+      mod.chapters.forEach(function(ch, idx) {
+        var isCompleted = ch.completed;
+        var bgColor = isCompleted ? 'rgba(0,230,118,0.04)' : 'var(--surf2)';
+        var checkColor = isCompleted ? 'var(--live)' : 'var(--muted)';
+
+        html += '<div style="background:' + bgColor + ';padding:.85rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.8rem;cursor:pointer" onclick="openVideo(' + ch.id + ',' + mod.id + ')">';
+        html += '<span style="color:' + checkColor + ';font-size:1rem;flex-shrink:0">' + (isCompleted ? '✅' : '⬜') + '</span>';
+        html += '<span style="font-size:.72rem;color:var(--muted2);min-width:24px">' + (idx + 1) + '</span>';
+        html += '<div style="flex:1">';
+        html += '<div style="font-size:.88rem;font-weight:500">' + ch.title + '</div>';
+        if (ch.description) html += '<div style="font-size:.74rem;color:var(--muted2);margin-top:1px">' + ch.description + '</div>';
+        html += '</div>';
+        if (ch.duration_minutes) html += '<span style="font-size:.72rem;color:var(--muted2);flex-shrink:0">' + durStr2(ch.duration_minutes) + '</span>';
+        if (!ch.video_url) html += '<span style="font-size:.65rem;color:var(--muted);border:1px solid var(--border2);padding:1px 5px">Sans vidéo</span>';
+
+        if (me && me.is_admin) {
+          html += '<button data-ch-id="' + ch.id + '" data-ch-mod="' + mod.id + '" data-ch-title="' + ch.title.replace(/"/g, '&quot;') + '" data-ch-desc="' + (ch.description || '').replace(/"/g, '&quot;') + '" data-ch-url="' + (ch.video_url || '') + '" data-ch-dur="' + (ch.duration_minutes || 0) + '" class="aff-action-btn edit-ch-btn" onclick="event.stopPropagation()">&#9999;&#65039;</button>';
+          html += '<button data-del-ch="' + ch.id + '" class="aff-action-btn" style="color:var(--accent)" onclick="event.stopPropagation();deleteChapterBtn(this)">&#128465;&#65039;</button>';
+        }
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    html += '</div>';
+  });
+
+  el.innerHTML = html;
+}
+
+function openVideo(chapterId, moduleId) {
+  // Find chapter
+  var chapter = null;
+  var mod = null;
+  formations.forEach(function(m) {
+    m.chapters.forEach(function(ch) {
+      if (ch.id === chapterId) { chapter = ch; mod = m; }
+    });
+  });
+  if (!chapter) return;
+
+  currentChapterId = chapterId;
+  currentChapterCompleted = chapter.completed;
+
+  document.getElementById('videoTitle').textContent = chapter.title;
+  document.getElementById('videoDesc').textContent = chapter.description || '';
+  document.getElementById('videoChapterInfo').textContent = (mod ? mod.title + ' · ' : '') + (chapter.duration_minutes ? durStr2(chapter.duration_minutes) : '');
+
+  var markBtn = document.getElementById('markDoneBtn');
+  markBtn.textContent = chapter.completed ? '✅ Vu' : 'Marquer comme vu';
+  markBtn.style.background = chapter.completed ? 'var(--surf2)' : 'var(--accent)';
+
+  if (chapter.video_url) {
+    document.getElementById('videoIframe').src = getEmbedUrl(chapter.video_url, chapter.video_type);
+    document.getElementById('videoPlayer').style.display = 'block';
+  } else {
+    document.getElementById('videoPlayer').style.display = 'none';
+  }
+
+  openModal('videoModal');
+}
+
+function closeVideoModal() {
+  document.getElementById('videoIframe').src = '';
+  closeModal('videoModal');
+}
+
+async function toggleChapterDone() {
+  if (!currentChapterId) return;
+  var method = currentChapterCompleted ? 'DELETE' : 'POST';
+  await fetch(API + '/formations/progress/' + currentChapterId, { method: method, credentials: 'include' });
+  currentChapterCompleted = !currentChapterCompleted;
+  var markBtn = document.getElementById('markDoneBtn');
+  markBtn.textContent = currentChapterCompleted ? '✅ Vu' : 'Marquer comme vu';
+  markBtn.style.background = currentChapterCompleted ? 'var(--surf2)' : 'var(--accent)';
+  loadFormations();
+}
+
+// Admin — modules
+function openAddModuleModal() {
+  document.getElementById('moduleModalTitle').textContent = 'Nouveau module';
+  document.getElementById('moduleTitle').value = '';
+  document.getElementById('moduleDesc').value = '';
+  document.getElementById('moduleCover').value = '';
+  document.getElementById('moduleEditId').value = '';
+  openModal('moduleModal');
+}
+
+function openEditModuleModal(id, title, desc, cover) {
+  document.getElementById('moduleModalTitle').textContent = 'Modifier le module';
+  document.getElementById('moduleTitle').value = title;
+  document.getElementById('moduleDesc').value = desc;
+  document.getElementById('moduleCover').value = cover;
+  document.getElementById('moduleEditId').value = id;
+  openModal('moduleModal');
+}
+
+async function saveModule() {
+  var title = document.getElementById('moduleTitle').value.trim();
+  var desc = document.getElementById('moduleDesc').value.trim();
+  var cover = document.getElementById('moduleCover').value.trim();
+  var editId = document.getElementById('moduleEditId').value;
+  if (!title) return;
+
+  if (editId) {
+    await fetch(API + '/admin/formations/modules/' + editId, {
+      method: 'PATCH', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: title, description: desc, cover_url: cover })
+    });
+  } else {
+    await fetch(API + '/admin/formations/modules', {
+      method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: title, description: desc, cover_url: cover })
+    });
+  }
+  closeModal('moduleModal');
+  loadFormations();
+  showToast('Module sauvegardé ✓', 'success');
+}
+
+async function deleteModule(id) {
+  if (!confirm('Supprimer ce module et tous ses chapitres ?')) return;
+  await fetch(API + '/admin/formations/modules/' + id, { method: 'DELETE', credentials: 'include' });
+  loadFormations();
+  showToast('Module supprimé', 'success');
+}
+
+// Admin — chapitres
+function openAddChapterModal(moduleId) {
+  document.getElementById('chapterModalTitle').textContent = 'Nouveau chapitre';
+  document.getElementById('chapterTitle').value = '';
+  document.getElementById('chapterDesc').value = '';
+  document.getElementById('chapterUrl').value = '';
+  document.getElementById('chapterDuration').value = '';
+  document.getElementById('chapterEditId').value = '';
+  document.getElementById('chapterModuleId').value = moduleId;
+  openModal('chapterModal');
+}
+
+function openEditChapterModal(id, moduleId, title, desc, url, duration) {
+  document.getElementById('chapterModalTitle').textContent = 'Modifier le chapitre';
+  document.getElementById('chapterTitle').value = title;
+  document.getElementById('chapterDesc').value = desc;
+  document.getElementById('chapterUrl').value = url;
+  document.getElementById('chapterDuration').value = duration;
+  document.getElementById('chapterEditId').value = id;
+  document.getElementById('chapterModuleId').value = moduleId;
+  openModal('chapterModal');
+}
+
+async function saveChapter() {
+  var title = document.getElementById('chapterTitle').value.trim();
+  var desc = document.getElementById('chapterDesc').value.trim();
+  var url = document.getElementById('chapterUrl').value.trim();
+  var duration = document.getElementById('chapterDuration').value;
+  var editId = document.getElementById('chapterEditId').value;
+  var moduleId = document.getElementById('chapterModuleId').value;
+  if (!title) return;
+
+  var vtype = url.includes('vimeo') ? 'vimeo' : 'youtube';
+
+  if (editId) {
+    await fetch(API + '/admin/formations/chapters/' + editId, {
+      method: 'PATCH', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: title, description: desc, video_url: url, video_type: vtype, duration_minutes: parseInt(duration) || 0 })
+    });
+  } else {
+    await fetch(API + '/admin/formations/modules/' + moduleId + '/chapters', {
+      method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: title, description: desc, video_url: url, video_type: vtype, duration_minutes: parseInt(duration) || 0 })
+    });
+  }
+  closeModal('chapterModal');
+  loadFormations();
+  showToast('Chapitre sauvegardé ✓', 'success');
+}
+
+async function deleteChapter(id) {
+  if (!confirm('Supprimer ce chapitre ?')) return;
+  await fetch(API + '/admin/formations/chapters/' + id, { method: 'DELETE', credentials: 'include' });
+  loadFormations();
+  showToast('Chapitre supprimé', 'success');
+}
+
+// ADMIN stats formations
+var formationStatsData = [];
+async function loadFormationStats() {
+  try {
+    var res = await fetch(API + '/admin/formations/stats', { credentials: 'include' });
+    if (res.ok) formationStatsData = await res.json();
+  } catch(e) {}
+}
+
+async function kickAffiliate(id, name) {
+  if (!confirm('Kick ' + name + ' du programme ET du serveur Discord ?')) return;
+  var res = await fetch(API + '/admin/affiliates/' + id + '/kick', { method: 'POST', credentials: 'include' });
+  var data = await res.json();
+  if (data.ok) {
+    showToast(name + ' kické(e) du programme ✓', 'success');
+    loadAdmin();
+  } else showToast(data.error || 'Erreur', 'error');
+}
+
+
+// Event delegation for dynamic buttons
+document.addEventListener('click', function(e) {
+  var editModBtn = e.target.closest('.edit-mod-btn');
+  if (editModBtn) { openEditModuleModal(editModBtn.dataset.modId, editModBtn.dataset.modTitle, editModBtn.dataset.modDesc, editModBtn.dataset.modCover); return; }
+  var addChBtn = e.target.closest('.add-ch-btn');
+  if (addChBtn) { openAddChapterModal(addChBtn.dataset.moduleId); return; }
+  var editChBtn = e.target.closest('.edit-ch-btn');
+  if (editChBtn) { openEditChapterModal(editChBtn.dataset.chId, editChBtn.dataset.chMod, editChBtn.dataset.chTitle, editChBtn.dataset.chDesc, editChBtn.dataset.chUrl, editChBtn.dataset.chDur); return; }
+  var calBtn = e.target.closest('.cal-btn');
+  if (calBtn) { openCalendar(calBtn.dataset.calId, calBtn.dataset.calName); return; }
+  var noteBtn = e.target.closest('.note-btn');
+  if (noteBtn) { openNoteModal(noteBtn.dataset.noteId, noteBtn.dataset.noteName, noteBtn.dataset.noteVal); return; }
+  var msgBtn = e.target.closest('.msg-btn');
+  if (msgBtn) { openMsgModal(msgBtn.dataset.msgId, msgBtn.dataset.msgName); return; }
+});
+
+function handleKick(btn) {
+  kickAffiliate(btn.dataset.kickId, btn.dataset.kickName);
+}
+
+function deleteTiktokBtn(btn) {
+  deleteTiktok(decodeURIComponent(btn.dataset.delHandle));
+}
+
+function deleteGameBtn(btn) {
+  deleteGame(parseInt(btn.dataset.delGame));
+}
+
+
+function deleteModuleBtn(btn) { deleteModule(btn.dataset.delMod); }
+function deleteChapterBtn(btn) { deleteChapter(btn.dataset.delCh); }
+function showToast(msg, type) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + (type || 'success') + ' show';
+  setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+
+document.querySelectorAll('.modal-overlay').forEach(function(el) {
+  el.addEventListener('click', function(e) {
+    if (e.target === el) el.classList.remove('open');
+  });
+});
+
+init();
+</script>
+</body>
+</html>
